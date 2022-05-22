@@ -1,0 +1,51 @@
+https://levelup.gitconnected.com/dependency-injection-using-self-types-in-scala-cake-pattern-67c76e603e5b
+
+Self-types are a way to declare that a trait must be mixed into another trait, even though it doesn’t directly extend it.
+
+Let us see an example :
+trait A {
+  this: B
+}
+
+This basically means that to implement A you need to implement B, i.e. A is dependent on B.
+Here, B is called the self type of A. The self types are declared with the keyword ‘this’.
+
+You can can have multiple traits as self types of a particular type. For example, if A is dependent on B , C and D then the code above would look like :
+trait A {
+  this: B with C with D
+}
+
+In this case, you would need to implement B and C and D as well if you implement A.
+
+                            **How is this different from plain old Inheritance?**
+
+With inheritance you are stuck with the implementation of your superclasses. With self types, you can mixin different implementations in your config object.
+
+There is also another problem with inheritance, the superclass leaks its information to every class down in the hierarchy. This is a prime example of violation of encapsulation.
+
+With dependency injection using self types you create layers in your dependency hierarchy. For example consider the following example :
+
+trait B {
+  this : A
+}
+trait C {
+  this : B
+}
+Members of trait C would be able to access members of trait B but would NOT be able to access members of trait A thereby creating layers in your application.
+Hence this pattern is also known as Cake Pattern.
+
+
+                                        CONCLUSION
+Cake pattern provides you compile time safety because you mixin your implementations in your config object.
+If any implementation in your config object is missing, the compiler will not compile your code.
+Hence this pattern can be used where compile type configuration is acceptable.
+
+This pattern is also helpful if you have to express mutual dependencies. Cake pattern allows to have cyclic dependencies that other types of DI don’t.
+
+Some of the other ways of implementing DI in Scala:
+1. Plain old argument passing through constructors (personally preferred)
+2. Guice (used by Play framework)
+3. Macwire
+4. implicits in Scala
+5. Spring (why not?)
+6. Reader monad (possible alternative to Cake pattern that uses the language constructs)
